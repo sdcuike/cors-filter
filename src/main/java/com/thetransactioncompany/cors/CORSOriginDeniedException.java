@@ -12,19 +12,7 @@ public class CORSOriginDeniedException extends CORSException {
 	/**
 	 * The request origin.
 	 */
-	private final Origin requestOrigin;
-	
-	
-	/**
-	 * Creates a new CORS origin denied exception with the specified 
-	 * message.
-	 *
-	 * @param message The message.
-	 */
-	public CORSOriginDeniedException(final String message) {
-	
-		this(message, null);
-	}
+	private final ValidatedOrigin requestOrigin;
 	
 	
 	/**
@@ -37,17 +25,33 @@ public class CORSOriginDeniedException extends CORSException {
 	public CORSOriginDeniedException(final String message, final Origin requestOrigin) {
 	
 		super(message);
-		
-		this.requestOrigin = requestOrigin;
+
+		// Validate origin to prevent potential XSS as reported in
+		// https://bitbucket.org/thetransactioncompany/cors-filter/issue/29/need-to-fix-xss-vulnerability-for-invalid
+
+		ValidatedOrigin validatedOrigin = null;
+
+		if (requestOrigin != null) {
+
+			try {
+				validatedOrigin = requestOrigin.validate();
+
+			} catch (OriginException e) {
+				// Invalid origin, don't record
+			}
+		}
+
+		this.requestOrigin = validatedOrigin != null ? validatedOrigin : null;
 	}
 	
 	
 	/**
-	 * Gets the request origin.
+	 * Gets the validated request origin.
 	 *
-	 * @return The request origin, {@code null} if unknown or not set.
+	 * @return The request origin, {@code null} if unknown, or if
+	 *         validation of the origin string has failed.
 	 */
-	public Origin getRequestOrigin() {
+	public ValidatedOrigin getRequestOrigin() {
 	
 		return requestOrigin;
 	}

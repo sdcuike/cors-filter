@@ -135,4 +135,8 @@ version 2.2 (2014-10-07)
 version 2.2.1 (2014-10-08)
     * Restores public CORSFilter constructor (issue #27).
 
+version 2.3 (2015-02-06)
+    * Adds origin verification to CORSOriginDeniedException to prevent
+      potential XSS (issue #29).
+
 [EOF]

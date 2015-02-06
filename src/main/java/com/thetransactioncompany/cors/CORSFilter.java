@@ -198,8 +198,8 @@ public class CORSFilter implements Filter {
 
 			} else if (type.equals(CORSRequestType.PREFLIGHT)) {
 
-				// Preflight CORS request, handle but don't 
-				// pass further down the chain
+				// Preflight CORS request, handle but don't pass
+				// further down the chain
 				handler.handlePreflightRequest(request, response);
 
 			} else if (config.allowGenericHttpRequests) {
@@ -219,7 +219,10 @@ public class CORSFilter implements Filter {
 
 		} catch (CORSOriginDeniedException e) {
 
-			String msg = e.getMessage() + ": " + e.getRequestOrigin();
+			String msg = e.getMessage();
+			if (e.getRequestOrigin() != null) {
+				msg = msg +": " + e.getRequestOrigin();
+			}
 			printMessage(response, HttpServletResponse.SC_FORBIDDEN, msg);
 
 		} catch (UnsupportedHTTPMethodException e) {

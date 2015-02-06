@@ -20,7 +20,7 @@ public class ValidatedOriginTest extends TestCase {
 		ValidatedOrigin o = null;
 		
 		try {
-			o = new ValidatedOrigin(uri);
+			o = new ValidatedOrigin(new Origin(uri));
 		
 		} catch (OriginException e) {
 			fail(e.getMessage());
@@ -42,7 +42,7 @@ public class ValidatedOriginTest extends TestCase {
 		ValidatedOrigin o = null;
 		
 		try {
-			o = new ValidatedOrigin(uri);
+			o = new ValidatedOrigin(new Origin(uri));
 		
 		} catch (OriginException e) {
 			fail(e.getMessage());
@@ -64,7 +64,7 @@ public class ValidatedOriginTest extends TestCase {
             ValidatedOrigin o = null;
             
             try {
-                    o = new ValidatedOrigin(uri);
+                    o = new ValidatedOrigin(new Origin(uri));
             
             } catch (OriginException e) {
                     fail(e.getMessage());
@@ -86,7 +86,7 @@ public class ValidatedOriginTest extends TestCase {
 		ValidatedOrigin o = null;
 		
 		try {
-			o = new ValidatedOrigin(uri);
+			o = new ValidatedOrigin(new Origin(uri));
 		
 		} catch (OriginException e) {
 			

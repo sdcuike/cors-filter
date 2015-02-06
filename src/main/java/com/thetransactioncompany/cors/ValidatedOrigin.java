@@ -37,26 +37,24 @@ public class ValidatedOrigin extends Origin {
 
 	
 	/**
-	 * Creates a new validated origin from the specified URI string.
+	 * Creates a new validated origin.
 	 *
-	 * @param value The URI string for the origin. Must not be 
-	 *              {@code null}.
+	 * @param origin The origin to validate. Must not be {@code null}.
 	 *
-	 * @throws OriginException If the value doesn't represent a valid and
-	 *                         supported origin string.
+	 * @throws OriginException If the value doesn't represent a valid URI
+	 *                         and a supported origin.
 	 */
-	public ValidatedOrigin(final String value)
+	public ValidatedOrigin(final Origin origin)
 		throws OriginException {
 	
-		super(value);
-		
-		
+		super(origin.toString());
+
 		// Parse URI value
 	
-		URI uri = null;
+		URI uri;
 	
 		try {
-			uri = new URI(value);
+			uri = new URI(origin.toString());
 			
 		} catch (URISyntaxException e) {
 		

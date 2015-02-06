@@ -57,7 +57,7 @@ public class Origin {
 	public ValidatedOrigin validate()
 		throws OriginException {
 	
-		return new ValidatedOrigin(value);
+		return new ValidatedOrigin(this);
 	}
 	
 	
