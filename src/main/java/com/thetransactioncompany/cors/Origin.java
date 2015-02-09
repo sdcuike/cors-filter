@@ -53,6 +53,8 @@ public class Origin {
 	 * 
 	 * @throws OriginException If the value doesn't represent a valid and
 	 *                         supported origin string.
+	 *
+	 * @return The origin.
 	 */
 	public ValidatedOrigin validate()
 		throws OriginException {

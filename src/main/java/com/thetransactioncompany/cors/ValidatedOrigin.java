@@ -119,8 +119,8 @@ public class ValidatedOrigin extends Origin {
 	 * <p>Example:
 	 *
 	 * <pre>
-	 * http://example.com => example.com
-	 * http://example.com:8080 => example.com:8080
+	 * http://example.com =&gt; example.com
+	 * http://example.com:8080 =&gt; example.com:8080
 	 * </pre>
 	 *
 	 * @return The suffix.
