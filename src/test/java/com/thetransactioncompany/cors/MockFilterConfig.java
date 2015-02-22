@@ -2,6 +2,9 @@ package com.thetransactioncompany.cors;
 
 
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
@@ -12,7 +15,10 @@ import javax.servlet.ServletContext;
  *
  * @author Vladimir Dzhuvinov
  */
-class MockFilterConfig implements FilterConfig {
+public class MockFilterConfig implements FilterConfig {
+
+
+	private final Map<String,String> initParameters = new HashMap<String, String>();
 
 
 	@Override
@@ -25,14 +31,20 @@ class MockFilterConfig implements FilterConfig {
 	@Override
 	public String getInitParameter(final String name) {
 
-		return null;
+		return initParameters.get(name);
+	}
+
+
+	public void setInitParameter(final String name, final String value) {
+
+		initParameters.put(name, value);
 	}
 
 
 	@Override
 	public Enumeration getInitParameterNames() {
 
-		return null;
+		return new Vector<String>(initParameters.keySet()).elements();
 	}
 
 

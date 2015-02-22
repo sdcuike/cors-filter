@@ -73,7 +73,7 @@ public class MockServletContext implements ServletContext {
 
 	@Override
 	public URL getResource(String s) throws MalformedURLException {
-		return null;
+		return new URL("file://" + System.getProperty("user.dir") + "/" + s);
 	}
 
 
@@ -84,7 +84,7 @@ public class MockServletContext implements ServletContext {
 			return new FileInputStream("src/test/resources" + s);
 
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			System.err.println(e.getMessage());
 			return null;
 		}
 	}
