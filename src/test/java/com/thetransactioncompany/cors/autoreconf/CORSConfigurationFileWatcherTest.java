@@ -32,13 +32,13 @@ public class CORSConfigurationFileWatcherTest extends TestCase {
 
 	public void testWatchParameterName() {
 
-		assertEquals("cors.configFileWatchInterval", CORSConfigurationFileWatcher.WATCH_INTERVAL_PARAM_NAME);
+		assertEquals("cors.configFileWatchInterval", CORSConfigurationFileWatcher.POLL_INTERVAL_PARAM_NAME);
 	}
 
 
 	public void testDefaultWatchIntervalConstant() {
 
-		assertEquals(20, CORSConfigurationFileWatcher.DEFAULT_WATCH_INTERVAL_SECONDS);
+		assertEquals(20, CORSConfigurationFileWatcher.DEFAULT_POLL_INTERVAL_SECONDS);
 	}
 
 
@@ -49,7 +49,7 @@ public class CORSConfigurationFileWatcherTest extends TestCase {
 
 		CORSConfigurationFileWatcher watcher = new CORSConfigurationFileWatcher(filterConfig);
 
-		assertEquals(CORSConfigurationFileWatcher.DEFAULT_WATCH_INTERVAL_SECONDS, watcher.getWatchIntervalSeconds());
+		assertEquals(CORSConfigurationFileWatcher.DEFAULT_POLL_INTERVAL_SECONDS, watcher.getPollIntervalSeconds());
 	}
 
 
@@ -57,14 +57,14 @@ public class CORSConfigurationFileWatcherTest extends TestCase {
 		throws Exception {
 
 		// Override watch interval
-		System.setProperty(CORSConfigurationFileWatcher.WATCH_INTERVAL_PARAM_NAME, "1");
+		System.setProperty(CORSConfigurationFileWatcher.POLL_INTERVAL_PARAM_NAME, "1");
 
 		MockFilterConfig filterConfig = new MockFilterConfig();
 		filterConfig.setInitParameter(CORSConfigurationLoader.CONFIG_FILE_PARAM_NAME, "test.properties");
 
 		CORSConfigurationFileWatcher watcher = new CORSConfigurationFileWatcher(filterConfig);
 
-		assertEquals(1l, watcher.getWatchIntervalSeconds());
+		assertEquals(1l, watcher.getPollIntervalSeconds());
 
 		watcher.start();
 
@@ -86,14 +86,14 @@ public class CORSConfigurationFileWatcherTest extends TestCase {
 		throws Exception {
 
 		// Override watch interval
-		System.setProperty(CORSConfigurationFileWatcher.WATCH_INTERVAL_PARAM_NAME, "1");
+		System.setProperty(CORSConfigurationFileWatcher.POLL_INTERVAL_PARAM_NAME, "1");
 
 		MockFilterConfig filterConfig = new MockFilterConfig();
 		filterConfig.setInitParameter(CORSConfigurationLoader.CONFIG_FILE_PARAM_NAME, "test.properties");
 
 		CORSConfigurationFileWatcher watcher = new CORSConfigurationFileWatcher(filterConfig);
 
-		assertEquals(1l, watcher.getWatchIntervalSeconds());
+		assertEquals(1l, watcher.getPollIntervalSeconds());
 
 		watcher.start();
 

@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.FilterConfig;
 
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import com.thetransactioncompany.cors.CORSConfigurationLoader;
@@ -27,9 +28,9 @@ import com.thetransactioncompany.cors.environment.SystemProperties;
 /**
  * Watches a CORS filter configuration file for changes.
  *
- * <p>The file is checked every {@link #DEFAULT_WATCH_INTERVAL_SECONDS 20
- * seconds}. This can be overridden by setting a
- * {@code cors.configFileWatchInterval} system property to the desired value
+ * <p>The file system is polled every {@link #DEFAULT_POLL_INTERVAL_SECONDS
+ * 20 seconds}. This can be overridden by setting a
+ * {@code cors.configFilePollInterval} system property to the desired value
  * (in seconds).
  *
  * @author Aleksey Zvolinsky
@@ -38,32 +39,32 @@ public class CORSConfigurationFileWatcher implements CORSConfigurationWatcher {
 
 
 	/**
-	 * The system property name for the configuration file watch interval,
+	 * The system property name for the configuration file poll interval,
 	 * in seconds.
 	 */
-	public static final String WATCH_INTERVAL_PARAM_NAME = "cors.configFileWatchInterval";
+	public static final String POLL_INTERVAL_PARAM_NAME = "cors.configFilePollInterval";
 
 
 	/**
-	 * The default watch interval (and initial watch delay), in seconds.
+	 * The default poll interval (and initial poll delay), in seconds.
 	 */
-	public static final long DEFAULT_WATCH_INTERVAL_SECONDS = 20;
+	public static final long DEFAULT_POLL_INTERVAL_SECONDS = 20;
 
 
 	/**
-	 * Logger.
+	 * The logger.
 	 */
-	private static final Logger LOG = Logger.getLogger(CORSConfigurationFileWatcher.class.getName());
+	private static final Logger LOG = LogManager.getLogManager().getLogger("");
 
 
 	/**
-	 * Polling scheduler.
+	 * The polling scheduler.
 	 */
 	private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
 
 	/**
-	 * File system watch service.
+	 * The file system watch service.
 	 */
 	private WatchService watcher;
 
@@ -75,7 +76,7 @@ public class CORSConfigurationFileWatcher implements CORSConfigurationWatcher {
 
 
 	/**
-	 * Environment properties.
+	 * The environment properties.
 	 */
 	private Environment environment;
 
@@ -109,11 +110,11 @@ public class CORSConfigurationFileWatcher implements CORSConfigurationWatcher {
 
 		try {
 			watcher = FileSystems.getDefault().newWatchService();
-			Path dir = getConfigDir();
+			Path dir = determineConfigDir();
 			dir.register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
-			LOG.fine("CORS Filter: Started watching for file system changes within " + dir);
+			LOG.fine("CORS Filter: Started watching for configuration file changes within " + dir);
 		} catch (IOException e) {
-			LOG.fine("CORS Filter: Failed to initialize file system watcher: " + e.getMessage());
+			LOG.severe("CORS Filter: Failed to initialize file system watcher: " + e.getMessage());
 		}
 	}
 
@@ -125,17 +126,17 @@ public class CORSConfigurationFileWatcher implements CORSConfigurationWatcher {
 			new Runnable() {
 				@Override
 				public void run() {
-					LOG.fine("CORS Filter: Started watching configuration file for changes");
+					LOG.finest("CORS Filter: Initiated configuration file poll");
 					try {
-						processEvent();
+						pollConfigFileForChanges();
+
 					} catch (Throwable throwable) {
-						System.out.println(throwable);
-						LOG.severe("CORS Filter: Watching failed: " + throwable);
+						LOG.severe("CORS Filter: Configuration file polling failed: " + throwable);
 					}
 				}
 			},
-			getWatchIntervalSeconds(), // initial watch delay
-			getWatchIntervalSeconds(), // watch interval
+			getPollIntervalSeconds(), // initial watch delay
+			getPollIntervalSeconds(), // watch interval
 			TimeUnit.SECONDS);
 	}
 
@@ -162,28 +163,27 @@ public class CORSConfigurationFileWatcher implements CORSConfigurationWatcher {
 
 
 	/**
-	 * Handles processing of a file system watch event.
+	 * Polls the configuration file for changes.
 	 */
-	private void processEvent() {
-
-		LOG.finer("CORS Filter: Processing a file system change event...");
+	private void pollConfigFileForChanges() {
 
 		WatchKey key = watcher.poll();
 		try {
 			if (key == null) {
 				return;
 			}
+
 			for (WatchEvent<?> event : key.pollEvents()) {
 				Kind<?> kind = event.kind();
 				if (StandardWatchEventKinds.OVERFLOW == kind) {
 					continue;
 				}
 
-				//The filename is the context of the event.
+				// The filename is the context of the event.
 				Path filename = (Path) event.context();
 
-				if (filename.endsWith(configFile)) {
-					LOG.fine("CORS Filter: Detected change in " + configFile + " , configuration reload required");
+				if (configFile.endsWith(filename.toString())) {
+					LOG.info("CORS Filter: Detected change in " + configFile + " , configuration reload required");
 					reloadRequired = true;
 				}
 			}
@@ -191,18 +191,19 @@ public class CORSConfigurationFileWatcher implements CORSConfigurationWatcher {
 			if (key != null) {
 				key.reset();
 			}
-			LOG.finer("CORS Filter: Finished processing of file system change event");
 		}
 	}
 
 
 	/**
+	 * Determines the CORS configuration file directory.
+	 *
 	 * @see CORSConfigurationLoader#load()
 	 *
 	 * @return The path to the directory where the configuration file is
 	 *         located.
 	 */
-	private Path getConfigDir() {
+	private Path determineConfigDir() {
 		try {
 			// Try to get the config file from the sys environment
 			configFile = getEnvironment().getProperty(CORSConfigurationLoader.CONFIG_FILE_PARAM_NAME);
@@ -219,8 +220,9 @@ public class CORSConfigurationFileWatcher implements CORSConfigurationWatcher {
 			URL url = filterConfig.getServletContext().getResource(configFile);
 
 			if (url == null) {
-				LOG.severe("CORS Filter: Configuration file not found: " + configFile);
-				throw new RuntimeException("Configuration file not found: " + configFile);
+				final String msg = "CORS Filter: Configuration file not found: " + configFile;
+				LOG.severe(msg);
+				throw new RuntimeException(msg);
 			}
 
 			return Paths.get(url.toURI()).getParent();
@@ -247,22 +249,22 @@ public class CORSConfigurationFileWatcher implements CORSConfigurationWatcher {
 
 
 	/**
-	 * Gets the configured watch interval.
+	 * Gets the configured poll interval.
 	 *
-	 * @return The watch interval, in seconds.
+	 * @return The poll interval, in seconds.
 	 */
-	public long getWatchIntervalSeconds() {
+	public long getPollIntervalSeconds() {
 
-		String period = getEnvironment().getProperty(WATCH_INTERVAL_PARAM_NAME);
+		String period = getEnvironment().getProperty(POLL_INTERVAL_PARAM_NAME);
 
 		if (period == null) {
-			LOG.fine("CORS Filter: Defaulting file system watch period to " + DEFAULT_WATCH_INTERVAL_SECONDS + " seconds, " +
-				"may be overridden with " + WATCH_INTERVAL_PARAM_NAME + " system property");
-			return DEFAULT_WATCH_INTERVAL_SECONDS;
+			LOG.fine("CORS Filter: Defaulted configuration file poll period to " + DEFAULT_POLL_INTERVAL_SECONDS + " seconds, " +
+				"may be overridden with " + POLL_INTERVAL_PARAM_NAME + " system property");
+			return DEFAULT_POLL_INTERVAL_SECONDS;
 		}
 
 		long overriddenPeriod = Long.parseLong(period);
-		LOG.fine("CORS Filter: Set file system watch period to " + overriddenPeriod + " seconds by " + WATCH_INTERVAL_PARAM_NAME + " system property");
+		LOG.fine("CORS Filter: Set configuration file poll period to " + overriddenPeriod + " seconds from " + POLL_INTERVAL_PARAM_NAME + " system property");
 		return overriddenPeriod;
 	}
 }

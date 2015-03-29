@@ -2,6 +2,7 @@ package com.thetransactioncompany.cors.autoreconf;
 
 
 import java.io.IOException;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import javax.servlet.Filter;
@@ -19,7 +20,7 @@ import com.thetransactioncompany.cors.CORSFilter;
 /**
  * CORS servlet filter which has the ability to automatically detect changes to
  * the configuration file and reconfigure itself. The configuration file will
- * be checked the next time the filter is invoked and the watch interval has
+ * be checked the next time the filter is invoked and the poll interval has
  * elapsed since the last check.
  */
 public class AutoReconfigurableCORSFilter implements Filter {
@@ -28,7 +29,7 @@ public class AutoReconfigurableCORSFilter implements Filter {
 	/**
 	 * Logger.
 	 */
-	private static final Logger LOG = Logger.getLogger(AutoReconfigurableCORSFilter.class.getName());
+	private static final Logger LOG = LogManager.getLogManager().getLogger("");
 
 
 	/**
@@ -74,18 +75,20 @@ public class AutoReconfigurableCORSFilter implements Filter {
 
 					try {
 						if (filter == null) {
-							LOG.fine("CORS Filter: Loading configuration...");
+							LOG.info("CORS Filter: Initiated first configuration");
 						} else {
-							LOG.fine("CORS Filter: Re-loading configuration...");
+							LOG.info("CORS Filter: Initiated re-configuration");
 						}
-						Filter oldFilter = filter;
+
+						final Filter oldFilter = filter;
 						filter = new CORSFilter(loader.load());
 						if (oldFilter != null) {
 							oldFilter.destroy();
 						}
 						watcher.reset();
+
 					} catch (CORSConfigurationException e) {
-						LOG.severe("CORS Filter: Failed to instantiate CORS filter: " + e.getMessage());
+						LOG.severe("CORS Filter: Failed to instantiate new CORS filter: " + e.getMessage());
 					}
 				}
 			}
@@ -104,9 +107,11 @@ public class AutoReconfigurableCORSFilter implements Filter {
 
 	@Override
 	public void destroy() {
+
+		watcher.stop();
+
 		if (filter != null) {
 			filter.destroy();
 		}
-		watcher.stop();
 	}
 }
