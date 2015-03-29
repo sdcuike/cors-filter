@@ -13,13 +13,12 @@
 	<version>2.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>CORS Filter</name>
+	<name>Cross-Origin Resource Sharing (CORS) Filter</name>
 	<description>
-		CORS Filter is a universal solution for fitting Cross-Origin 
-		Resource Sharing (CORS) support to Java web applications. CORS 
-		is a recent W3C effort to introduce a standard mechanism for 
-		enabling cross-domain requests in web browsers and 
-		participating servers.
+		CORS Filter is a universal solution for fitting Cross-Origin Resource
+		Sharing (CORS) support to Java web applications. CORS is a recent W3C
+		effort to introduce a standard mechanism for enabling cross-domain
+		requests in web browsers and participating servers.
 	</description>
 	<inceptionYear>2010</inceptionYear>
 	<url>http://software.dzhuvinov.com/cors-filter.html</url>
