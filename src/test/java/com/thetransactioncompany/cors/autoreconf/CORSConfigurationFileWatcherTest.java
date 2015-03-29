@@ -32,7 +32,7 @@ public class CORSConfigurationFileWatcherTest extends TestCase {
 
 	public void testWatchParameterName() {
 
-		assertEquals("cors.configFileWatchInterval", CORSConfigurationFileWatcher.POLL_INTERVAL_PARAM_NAME);
+		assertEquals("cors.configFilePollInterval", CORSConfigurationFileWatcher.POLL_INTERVAL_PARAM_NAME);
 	}
 
 
@@ -109,7 +109,7 @@ public class CORSConfigurationFileWatcherTest extends TestCase {
 	public void tearDown()
 		throws Exception {
 
-		System.clearProperty("cors.configFileWatchInterval");
+		System.clearProperty("cors.configFilePollInterval");
 
 		new File("test.properties").delete();
 	}
