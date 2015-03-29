@@ -1,4 +1,4 @@
-package com.thetransactioncompany.cors.dynamic;
+package com.thetransactioncompany.cors.autoreconf;
 
 
 import java.io.IOException;

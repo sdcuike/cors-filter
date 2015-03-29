@@ -1,4 +1,4 @@
-package com.thetransactioncompany.cors.dynamic;
+package com.thetransactioncompany.cors.autoreconf;
 
 
 import java.io.IOException;
@@ -22,13 +22,13 @@ import com.thetransactioncompany.cors.CORSFilter;
  * be checked the next time the filter is invoked and the watch interval has
  * elapsed since the last check.
  */
-public class DynamicCORSFilter implements Filter {
+public class AutoReconfigurableCORSFilter implements Filter {
 
 
 	/**
 	 * Logger.
 	 */
-	private static final Logger LOG = Logger.getLogger(DynamicCORSFilter.class.getName());
+	private static final Logger LOG = Logger.getLogger(AutoReconfigurableCORSFilter.class.getName());
 
 
 	/**
@@ -68,7 +68,7 @@ public class DynamicCORSFilter implements Filter {
 
 		if (watcher.reloadRequired() || filter == null) {
 
-			synchronized (DynamicCORSFilter.class) {
+			synchronized (AutoReconfigurableCORSFilter.class) {
 
 				if (watcher.reloadRequired() || filter == null) {
 
