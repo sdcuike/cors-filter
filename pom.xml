@@ -189,7 +189,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<classifier>demo</classifier>
-					<archiveClasses>true</archiveClasses>
+					<archiveClasses>false</archiveClasses>
 				</configuration>
 			</plugin>
 			<plugin>
