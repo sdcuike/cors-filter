@@ -139,4 +139,8 @@ version 2.3 (2015-02-06)
     * Adds origin verification to CORSOriginDeniedException to prevent
       potential XSS (issue #29).
 
+version 2.4 (2015-03-29)
+	* Adds support for automatic reconfiguration (iss #23).
+
+
 [EOF]
