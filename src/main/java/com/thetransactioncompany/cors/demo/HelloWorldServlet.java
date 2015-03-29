@@ -15,21 +15,8 @@ import javax.servlet.http.*;
 public class HelloWorldServlet extends HttpServlet {
 
 
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-		throws IOException, ServletException {
-	
-		doHelloWorld(request, response);
-	}
-	
-	
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-		throws IOException, ServletException {
-		
-		doHelloWorld(request, response);
-	}
-	
-	
-	private void doHelloWorld(HttpServletRequest request, HttpServletResponse response)
+	@Override
+	public void service(HttpServletRequest request, HttpServletResponse response)
 		throws IOException, ServletException {
 	
 		response.setContentType("text/plain");
