@@ -100,6 +100,22 @@ public class ValidatedOriginTest extends TestCase {
 		assertEquals(8080, o.getPort());
 		assertEquals("192.168.0.1:8080", o.getSuffix());
 	}
+
+
+	// See https://bitbucket.org/thetransactioncompany/cors-filter/issues/32/nullpointerexception-is-thrown-when-there
+	public void testNullHost() {
+
+		String uri = "http:///path/";
+
+		ValidatedOrigin o;
+
+		try {
+			o = new ValidatedOrigin(new Origin(uri));
+			fail();
+		} catch (OriginException e) {
+			assertEquals("Bad origin URI: Missing authority (host)", e.getMessage());
+		}
+	}
 	
 
 //      Path+query+fragment checking not implemented at present

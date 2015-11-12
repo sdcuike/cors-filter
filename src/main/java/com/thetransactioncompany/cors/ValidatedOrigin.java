@@ -70,6 +70,9 @@ public class ValidatedOrigin extends Origin {
 		
 		// Canonicalise scheme and host
 		scheme = scheme.toLowerCase();
+
+		if (host == null)
+			throw new OriginException("Bad origin URI: Missing authority (host)");
 		
 		// Apply the IDNA toASCII algorithm [RFC3490] to /host/
 		host = IDN.toASCII(host, IDN.ALLOW_UNASSIGNED | IDN.USE_STD3_ASCII_RULES);
