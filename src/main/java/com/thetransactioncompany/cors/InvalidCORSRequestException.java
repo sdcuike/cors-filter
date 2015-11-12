@@ -9,6 +9,34 @@ package com.thetransactioncompany.cors;
  */
 public class InvalidCORSRequestException extends CORSException {
 
+
+	/**
+	 * Invalid simple / actual request.
+	 */
+	public static final InvalidCORSRequestException INVALID_ACTUAL_REQUEST =
+		new InvalidCORSRequestException("Invalid simple/actual CORS request");
+
+
+	/**
+	 * Invalid preflight request.
+	 */
+	public static final InvalidCORSRequestException INVALID_PREFLIGHT_REQUEST =
+		new InvalidCORSRequestException("Invalid preflight CORS request");
+
+
+	/**
+	 * Missing Access-Control-Request-Method header.
+	 */
+	public static final InvalidCORSRequestException MISSING_ACCESS_CONTROL_REQUEST_METHOD_HEADER =
+		new InvalidCORSRequestException("Invalid preflight CORS request: Missing Access-Control-Request-Method header");
+
+
+	/**
+	 * Invalid request header value.
+	 */
+	public static final InvalidCORSRequestException INVALID_HEADER_VALUE =
+		new InvalidCORSRequestException("Invalid preflight CORS request: Bad request header value");
+
 	
 	/**
 	 * Creates a new invalid CORS request exception with the specified 
@@ -16,7 +44,7 @@ public class InvalidCORSRequestException extends CORSException {
 	 *
 	 * @param message The message.
 	 */
-	public InvalidCORSRequestException(final String message) {
+	private InvalidCORSRequestException(final String message) {
 	
 		super(message);
 	}

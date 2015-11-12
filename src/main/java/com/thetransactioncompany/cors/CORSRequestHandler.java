@@ -93,7 +93,7 @@ public class CORSRequestHandler {
 		       UnsupportedHTTPMethodException {
 	
 		if (CORSRequestType.detect(request) != CORSRequestType.ACTUAL)
-			throw new InvalidCORSRequestException("Invalid simple/actual CORS request");
+			throw InvalidCORSRequestException.INVALID_ACTUAL_REQUEST;
 		
 		
 		// Check origin against allow list
@@ -163,7 +163,7 @@ public class CORSRequestHandler {
 		       UnsupportedHTTPHeaderException {
 		
 		if (CORSRequestType.detect(request) != CORSRequestType.PREFLIGHT)
-			throw new InvalidCORSRequestException("Invalid preflight CORS request");
+			throw InvalidCORSRequestException.INVALID_PREFLIGHT_REQUEST;
 		
 		// Check origin against allow list
 		Origin requestOrigin = new Origin(request.getHeader(HeaderName.ORIGIN));
@@ -178,7 +178,7 @@ public class CORSRequestHandler {
 		String requestMethodHeader = request.getHeader(HeaderName.ACCESS_CONTROL_REQUEST_METHOD);
 		
 		if (requestMethodHeader == null)
-			throw new InvalidCORSRequestException("Invalid preflight CORS request: Missing Access-Control-Request-Method header");
+			throw InvalidCORSRequestException.MISSING_ACCESS_CONTROL_REQUEST_METHOD_HEADER;
 		
 		final String requestedMethod = requestMethodHeader.toUpperCase();
 		
@@ -195,7 +195,7 @@ public class CORSRequestHandler {
 				
 			} catch (IllegalArgumentException e) {
 				// Invalid header name
-				throw new InvalidCORSRequestException("Invalid preflight CORS request: Bad request header value");
+				throw InvalidCORSRequestException.INVALID_HEADER_VALUE;
 			}
 		}
 		

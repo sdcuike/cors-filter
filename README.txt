@@ -144,5 +144,8 @@ version 2.4 (2015-03-29)
 
 version 2.4.1 (2015-11-12)
     * Adds host check to ValidatedOrigin constructor (iss #32).
+    * Switches to static InvalidCORSRequestException instances to speed up
+      exception handling.
+      
 
 [EOF]
