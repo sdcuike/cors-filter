@@ -142,7 +142,7 @@ version 2.3 (2015-02-06)
 version 2.4 (2015-03-29)
 	* Adds support for automatic reconfiguration (iss #23).
 
-version 2.4.1 (2015-11-12)
+version 2.5 (2015-11-13)
     * Adds host check to ValidatedOrigin constructor (iss #32).
     * Simplifies and improves performance of CORS exception handling.
 
