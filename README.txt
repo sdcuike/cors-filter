@@ -1,6 +1,6 @@
 Java Cross-Origin Resource Sharing (CORS) Filter
 
-Copyright (c) Vladimir Dzhuvinov, 2010 - 2014
+Copyright (c) Vladimir Dzhuvinov, 2010 - 2015
 
 
 README
