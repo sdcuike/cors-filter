@@ -110,9 +110,10 @@ public class CORSRequestHandlerTest extends TestCase {
 		try {
 			handler.handleActualRequest(request, response);
 			fail();
-		} catch (CORSOriginDeniedException e) {
+		} catch (CORSException e) {
 			// ok
 			assertEquals("CORS origin denied", e.getMessage());
+			assertEquals(403, e.getHTTPStatusCode());
 		}
 	}
 
@@ -136,9 +137,10 @@ public class CORSRequestHandlerTest extends TestCase {
 		try {
 			handler.handleActualRequest(request, response);
 			fail();
-		} catch (UnsupportedHTTPMethodException e) {
+		} catch (CORSException e) {
 			// ok
 			assertEquals("Unsupported HTTP method", e.getMessage());
+			assertEquals(405, e.getHTTPStatusCode());
 		}
 	}
 

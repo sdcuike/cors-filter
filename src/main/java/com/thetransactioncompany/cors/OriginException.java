@@ -15,7 +15,7 @@ public class OriginException extends Exception {
 	 * @param message The message.
 	 */
 	public OriginException(final String message) {
-	
+
 		super(message);
 	}
 }

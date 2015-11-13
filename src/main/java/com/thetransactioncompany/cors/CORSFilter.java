@@ -133,32 +133,33 @@ public class CORSFilter implements Filter {
 
 
 	/**
-	 * Produces a simple HTTP text/plain response with the specified status
-	 * code and message.
+	 * Produces a simple HTTP text/plain response for the specified CORS
+	 * exception.
 	 *
 	 * <p>Note: The CORS filter avoids falling back to the default web
 	 * container error page (typically a richly-formatted HTML page) to
 	 * make it easier for XHR debugger tools to identify the cause of
 	 * failed requests.
 	 *
-	 * @param response The HTTP servlet response. Must not be {@code null}.
-	 * @param sc       The HTTP status code.
-	 * @param msg      The message.
+	 * @param corsException The CORS exception. Must not be {@code null}.
+	 * @param response      The HTTP servlet response. Must not be
+	 *                      {@code null}.
 	 *
 	 * @throws IOException      On a I/O exception.
 	 * @throws ServletException On a general request processing exception.
 	 */
-	private void printMessage(final HttpServletResponse response, final int sc, final String msg)
+	private void printMessage(final CORSException corsException,
+				  final HttpServletResponse response)
 		throws IOException, ServletException {
 
 		// Set the status code
-		response.setStatus(sc);
+		response.setStatus(corsException.getHTTPStatusCode());
 
 		// Write the error message
 		response.resetBuffer();
 		response.setContentType("text/plain");
 		PrintWriter out = response.getWriter();
-		out.println("Cross-Origin Resource Sharing (CORS) Filter: " + msg);
+		out.println("Cross-Origin Resource Sharing (CORS) Filter: " + corsException.getMessage());
 	}
 
 
@@ -210,42 +211,11 @@ public class CORSFilter implements Filter {
 			} else {
 
 				// Generic HTTP requests denied
-				printMessage(response, HttpServletResponse.SC_FORBIDDEN, "Generic HTTP requests not allowed");
+				printMessage(CORSException.GENERIC_HTTP_NOT_ALLOWED, response);
 			}
+		} catch (CORSException e) {
 
-		} catch (InvalidCORSRequestException e) {
-
-			printMessage(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-
-		} catch (CORSOriginDeniedException e) {
-
-			String msg = e.getMessage();
-			if (e.getRequestOrigin() != null) {
-				msg = msg +": " + e.getRequestOrigin();
-			}
-			printMessage(response, HttpServletResponse.SC_FORBIDDEN, msg);
-
-		} catch (UnsupportedHTTPMethodException e) {
-
-			String msg = e.getMessage();
-
-			String method = e.getRequestedMethod();
-
-			if (method != null)
-				msg = msg + ": " + method;
-
-			printMessage(response, HttpServletResponse.SC_METHOD_NOT_ALLOWED, msg);
-
-		} catch (UnsupportedHTTPHeaderException e) {
-
-			String msg = e.getMessage();
-
-			String header = e.getRequestHeader();
-
-			if (header != null)
-				msg = msg + ": " + header;
-
-			printMessage(response, HttpServletResponse.SC_FORBIDDEN, msg);
+			printMessage(e, response);
 		}
 	}
 

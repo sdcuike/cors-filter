@@ -79,35 +79,28 @@ public class CORSRequestHandler {
 	 * @param request  The HTTP request.
 	 * @param response The HTTP response.
 	 *
-	 * @throws InvalidCORSRequestException    If not a valid CORS simple /
-	 *                                        actual request.
-	 * @throws CORSOriginDeniedException      If the origin is not allowed.
-	 * @throws UnsupportedHTTPMethodException If the requested HTTP method
-	 *                                        is not supported by the CORS
-	 *                                        policy.
+	 * @throws CORSException If the request is invalid or denied.
 	 */
 	public void handleActualRequest(final HttpServletRequest request, 
 		                        final HttpServletResponse response)
-		throws InvalidCORSRequestException, 
-		       CORSOriginDeniedException, 
-		       UnsupportedHTTPMethodException {
+		throws CORSException {
 	
 		if (CORSRequestType.detect(request) != CORSRequestType.ACTUAL)
-			throw InvalidCORSRequestException.INVALID_ACTUAL_REQUEST;
+			throw CORSException.INVALID_ACTUAL_REQUEST;
 		
 		
 		// Check origin against allow list
 		Origin requestOrigin = new Origin(request.getHeader(HeaderName.ORIGIN));
 		
 		if (! config.isAllowedOrigin(requestOrigin))
-			throw new CORSOriginDeniedException("CORS origin denied", requestOrigin);
+			throw CORSException.ORIGIN_DENIED;
 		
 		
 		// Check method
 		final String method = request.getMethod().toUpperCase();
 		
 		if (! config.isSupportedMethod(method))
-			throw new UnsupportedHTTPMethodException("Unsupported HTTP method", method);
+			throw CORSException.UNSUPPORTED_METHOD;
 		
 		
 		// Success, append response headers
@@ -146,30 +139,19 @@ public class CORSRequestHandler {
 	 * @param request  The HTTP request.
 	 * @param response The HTTP response.
 	 *
-	 * @throws InvalidCORSRequestException    If not a valid CORS preflight
-	 *                                        request.
-	 * @throws CORSOriginDeniedException      If the origin is not allowed.
-	 * @throws UnsupportedHTTPMethodException If the requested HTTP method
-	 *                                        is not supported by the CORS
-	 *                                        policy.
-	 * @throws UnsupportedHTTPHeaderException If the requested HTTP header
-	 *                                        is not supported by the CORS
-	 *                                        policy.
+	 * @throws CORSException If the request is invalid or denied.
 	 */
 	public void handlePreflightRequest(final HttpServletRequest request, final HttpServletResponse response)
-		throws InvalidCORSRequestException, 
-		       CORSOriginDeniedException, 
-		       UnsupportedHTTPMethodException, 
-		       UnsupportedHTTPHeaderException {
+		throws CORSException {
 		
 		if (CORSRequestType.detect(request) != CORSRequestType.PREFLIGHT)
-			throw InvalidCORSRequestException.INVALID_PREFLIGHT_REQUEST;
+			throw CORSException.INVALID_PREFLIGHT_REQUEST;
 		
 		// Check origin against allow list
 		Origin requestOrigin = new Origin(request.getHeader(HeaderName.ORIGIN));
 		
 		if (! config.isAllowedOrigin(requestOrigin))
-			throw new CORSOriginDeniedException("CORS origin denied", requestOrigin);
+			throw CORSException.ORIGIN_DENIED;
 			
 		
 		// Parse requested method
@@ -178,7 +160,7 @@ public class CORSRequestHandler {
 		String requestMethodHeader = request.getHeader(HeaderName.ACCESS_CONTROL_REQUEST_METHOD);
 		
 		if (requestMethodHeader == null)
-			throw InvalidCORSRequestException.MISSING_ACCESS_CONTROL_REQUEST_METHOD_HEADER;
+			throw CORSException.MISSING_ACCESS_CONTROL_REQUEST_METHOD_HEADER;
 		
 		final String requestedMethod = requestMethodHeader.toUpperCase();
 		
@@ -195,14 +177,14 @@ public class CORSRequestHandler {
 				
 			} catch (IllegalArgumentException e) {
 				// Invalid header name
-				throw InvalidCORSRequestException.INVALID_HEADER_VALUE;
+				throw CORSException.INVALID_HEADER_VALUE;
 			}
 		}
 		
 		
 		// Now, do method check
 		if (! config.isSupportedMethod(requestedMethod))
-			throw new UnsupportedHTTPMethodException("Unsupported HTTP method", requestedMethod);
+			throw CORSException.UNSUPPORTED_METHOD;
 		
 		
 		// Author request headers check
@@ -211,7 +193,7 @@ public class CORSRequestHandler {
 			for (String requestHeader : requestHeaders) {
 
 				if (!config.supportedHeaders.contains(requestHeader))
-					throw new UnsupportedHTTPHeaderException("Unsupported HTTP request header", requestHeader);
+					throw CORSException.UNSUPPORTED_REQUEST_HEADER;
 			}			
 		}
 		
